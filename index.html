@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Персональная визитка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <style>
+        /* Базовый сброс и настройка окружения */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            background-color: #161213;
+            background-image:
+                radial-gradient(circle at 15% 12%, rgba(158, 36, 56, 0.16), transparent 42%),
+                radial-gradient(circle at 88% 82%, rgba(110, 22, 41, 0.18), transparent 45%),
+                linear-gradient(180deg, #191516 0%, #131011 100%);
+            color: #f0e6e7;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 38px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Ровное отображение эмодзи и флагов Twemoji в тексте */
+        img.emoji {
+            height: 1.15em;
+            width: 1.15em;
+            margin: 0 0.08em;
+            vertical-align: -0.2em;
+            display: inline-block;
+        }
+
+        /* Увеличенный виджет с полями вокруг */
+        .page-shell {
+            width: 100%;
+            max-width: 548px;
+            background-color: rgba(33, 29, 28, 0.94);
+            border: 3px solid #362c2d;
+            border-radius: 46px;
+            padding: 22px 18px 26px;
+            box-shadow: 0 22px 54px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(184, 50, 68, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+            animation: shellAppear 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes shellAppear {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Широкий горизонтальный контейнер верхней шапки */
+        .header-section {
+            width: 100%;
+            max-width: 670px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            max-height: 595px;
+            flex-shrink: 0;
+        }
+
+        /* Внешняя рубиново-красная рамка с плавным переливанием свечения */
+        .header-frame-outer {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            border: 2.5px solid #b83244;
+            padding: 6px;
+            background: linear-gradient(135deg, #211215 0%, #150e10 50%, #261217 100%);
+            background-size: 200% 200%;
+            box-shadow: 0 8px 26px rgba(140, 35, 50, 0.35), inset 0 0 10px rgba(184, 50, 68, 0.2);
+            animation: borderShift 7s ease-in-out infinite;
+        }
+
+        @keyframes borderShift {
+            0%, 100% {
+                background-position: 0% 50%;
+                border-color: #b83244;
+                box-shadow: 0 8px 26px rgba(140, 35, 50, 0.35), inset 0 0 10px rgba(184, 50, 68, 0.2);
+            }
+            50% {
+                background-position: 100% 50%;
+                border-color: #d64559;
+                box-shadow: 0 10px 30px rgba(184, 50, 68, 0.48), inset 0 0 14px rgba(214, 69, 89, 0.28);
+            }
+        }
+
+        /* Внутренняя рубиново-красная рамка вокруг изображения */
+        .header-frame-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            border: 1.5px solid #8c2332;
+            background-color: #292223;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Картинка обложки */
+        .header-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .header-frame-inner:hover .header-img {
+            transform: scale(1.025);
+        }
+
+        /* Заглушка при отсутствии файла header.jpg */
+        .header-fallback {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #debcc1;
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            user-select: none;
+            text-align: center;
+            padding: 14px;
+        }
+
+        .header-fallback small {
+            font-size: 13.5px;
+            color: #a1787e;
+            font-weight: 600;
+        }
+
+        /* Нижний блок с карточками */
+        .bio-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cards-stack {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-group {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Глянцевый бордовый квадратный бейдж с кавычками и мягким покачиванием */
+        .quote-badge {
+            position: absolute;
+            top: -16px;
+            right: -6px;
+            z-index: 10;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #871a32, #3d0914);
+            border: 1px solid #a82c47;
+            box-shadow: 0 5px 15px rgba(117, 22, 43, 0.58);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            animation: badgeFloat 3.6s ease-in-out infinite;
+        }
+
+        @keyframes badgeFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-3px) rotate(2deg);
+            }
+        }
+
+        .quote-badge svg {
+            width: 19px;
+            height: 19px;
+            fill: #e8aeb9;
+            display: block;
+        }
+
+        /* Бордово-красные кнопки-карточки с переливающимся бликом */
+        .bio-btn {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            background: linear-gradient(120deg, #361c20 0%, #441e25 35%, #2a1518 70%, #381b20 100%);
+            background-size: 220% 220%;
+            border: 1px solid #692f38;
+            border-radius: 14px;
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.42);
+            color: #f2e8e9;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 19.5px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            padding: 22px 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: transform 0.18s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            animation: cardShimmer 8s ease-in-out infinite;
+        }
+
+        .bio-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 210, 218, 0.09), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.55s ease;
+            pointer-events: none;
+        }
+
+        .bio-btn:hover::after {
+            left: 150%;
+        }
+
+        @keyframes cardShimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .bio-btn:hover {
+            border-color: #9e4351;
+            box-shadow: 0 8px 24px rgba(150, 38, 56, 0.35);
+            transform: translateY(-1.5px);
+        }
+
+        .bio-btn:active {
+            transform: translateY(0.5px) scale(0.992);
+        }
+
+        .bio-btn svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .bio-btn:hover svg {
+            transform: scale(1.08);
+        }
+
+        /* Выпадающая панель с описанием */
+        .accordion-panel {
+            display: none;
+            margin-top: 10px;
+            background: #231114;
+            border: 1px solid #592830;
+            border-radius: 14px;
+            padding: 18px 18px;
+            font-size: 15px;
+            line-height: 1.55;
+            color: #e4d6d8;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .accordion-panel.is-open {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: fadeSlide 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Основной текст внутри About Me — центрированный и структурированный */
+        .about-main-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 9px;
+            padding: 6px 8px 4px;
+        }
+
+        .about-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #f9e6e9;
+            letter-spacing: 0.02em;
+        }
+
+        .about-name span {
+            color: #c98f99;
+            font-weight: 400;
+        }
+
+        .about-pills-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .about-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #1b0d10;
+            border: 1px solid #4d2229;
+            border-radius: 999px;
+            padding: 4px 13px;
+            font-size: 13.5px;
+            color: #edd9dc;
+            letter-spacing: 0.02em;
+        }
+
+        .about-pill.is-mono {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+            text-transform: lowercase;
+        }
+
+        .about-langs {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 4px 14px;
+            background-color: #1b0d10;
+            border: 1px solid #4d2229;
+            border-radius: 999px;
+            font-size: 14px;
+            color: #b87e88;
+        }
+
+        .about-location {
+            font-size: 14.5px;
+            color: #e6d1d5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .about-handle-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+            padding: 5px 15px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #381a20 0%, #2a1317 100%);
+            border: 1px solid #75303c;
+            color: #f2b6c1;
+            text-decoration: none;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .about-handle-link:hover {
+            color: #ffffff;
+            border-color: #b83244;
+            box-shadow: 0 4px 14px rgba(184, 50, 68, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .about-handle-link:active {
+            transform: translateY(0);
+        }
+
+        /* Отдельные подтемы внутри About Me (kinn list, my fandoms) */
+        .subtopics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .subtopic-card {
+            background-color: #1c0e10;
+            border: 1px solid #4d2229;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .subtopic-btn {
+            width: 100%;
+            background: linear-gradient(180deg, #2e171b 0%, #251215 100%);
+            border: none;
+            border-bottom: 1px solid transparent;
+            color: #f2dfe2;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .subtopic-btn:hover {
+            background: linear-gradient(180deg, #3a1d22 0%, #2e171b 100%);
+            color: #ffffff;
+        }
+
+        .subtopic-btn.is-active {
+            border-bottom-color: #4d2229;
+        }
+
+        .subtopic-arrow {
+            font-size: 12px;
+            color: #cfa2a9;
+            transition: transform 0.24s ease;
+        }
+
+        .subtopic-btn.is-active .subtopic-arrow {
+            transform: rotate(180deg);
+        }
+
+        .subtopic-content {
+            display: none;
+            padding: 12px 15px;
+            font-size: 14.5px;
+            line-height: 1.55;
+            color: #dfd0d2;
+            background-color: #1b0d0f;
+        }
+
+        .subtopic-content.is-open {
+            display: block;
+            animation: fadeSlide 0.2s ease-out;
+        }
+
+        .fandom-extra {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #38191e;
+            color: #f2dfe2;
+        }
+
+        /* Карточка с соцсетями и иконками */
+        .socials-card {
+            width: 100%;
+            background: linear-gradient(120deg, #361c20 0%, #421e25 50%, #2a1518 100%);
+            background-size: 200% 200%;
+            border: 1px solid #692f38;
+            border-radius: 14px;
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.42);
+            padding: 22px 22px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: cardShimmer 9s ease-in-out infinite;
+        }
+
+        .socials-title {
+            color: #f2e8e9;
+            font-size: 19.5px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            margin-bottom: 18px;
+            user-select: none;
+        }
+
+        .socials-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #be8f97;
+            text-decoration: none;
+            padding: 6px;
+            border-radius: 10px;
+            transition: color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .social-link:hover {
+            color: #f7d4da;
+            background-color: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2.5px) scale(1.06);
+        }
+
+        .social-link:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        .social-link svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+            display: block;
+        }
+
+        /* Уважение системной настройки снижения анимаций */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Адаптация под экраны телефонов */
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .page-shell {
+                padding: 18px 14px 22px;
+                border-radius: 26px;
+                gap: 12px;
+            }
+
+            .bio-btn, .socials-title {
+                font-size: 18.5px;
+                padding: 19px 16px;
+            }
+
+            .subtopic-btn {
+                padding: 14px 15px;
+            }
+
+            .socials-card {
+                padding: 19px 16px 21px;
+            }
+
+            .socials-row {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-shell">
+
+        <!-- Широкая горизонтальная шапка в двойной рубиново-красной рамке -->
+        <header class="header-section">
+            <div class="header-frame-outer">
+                <div class="header-frame-inner">
+                    <img
+                        id="header-img"
+                        class="header-img"
+                        src="header.jpg"
+                        alt="Шапка"
+                        onerror="this.style.display='none'; document.getElementById('header-fallback').style.display='flex';"
+                    >
+                    <div id="header-fallback" class="header-fallback">
+                        <span>header.jpg</span>
+                        <small>поместите файл рядом с index.html</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Три бордово-красные карточки под шапкой -->
+        <main class="bio-container">
+            <div class="cards-stack">
+
+                <!-- 1. who am i ?????? (about me + подтемы kinn list и my fandoms) -->
+                <div class="card-group">
+                    <div class="quote-badge" aria-hidden="true">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="#e8aeb9">
+                            <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z"/>
+                        </svg>
+                    </div>
+
+                    <button type="button" class="bio-btn" onclick="togglePanel('panel-bio')">
+                        <span>who am i ??????</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#cfa2a9">
+                            <path d="M12 2.5c-2.35 0-4.25 1.9-4.25 4.25 0 1.48.76 2.78 1.91 3.54-.33.58-.86 1.07-1.56 1.38-1.95.86-3.6 2.34-3.6 4.58v1.75c0 .83.67 1.5 1.5 1.5h12c.83 0 1.5-.67 1.5-1.5v-1.75c0-2.24-1.65-3.72-3.6-4.58-.7-.31-1.23-.8-1.56-1.38 1.15-.76 1.91-2.06 1.91-3.54C16.25 4.4 14.35 2.5 12 2.5zm-4.5 17.5c-.28 0-.5.22-.5.5v.5c0 .28.22.5.5.5h9c.28 0 .5-.22.5-.5v-.5c0-.28-.22-.5-.5-.5h-9z"/>
+                        </svg>
+                    </button>
+
+                    <div id="panel-bio" class="accordion-panel">
+                        <!-- Основное About Me по центру -->
+                        <div class="about-main-info">
+                            <div class="about-name">hot jeremy <span>—</span> jeremy</div>
+
+                            <div class="about-pills-row">
+                                <span class="about-pill">29 september</span>
+                                <span class="about-pill is-mono">intp-t</span>
+                            </div>
+
+                            <div class="about-langs">
+                                <span>🇷🇺</span>
+                                <span>—</span>
+                                <span>🇬🇧</span>
+                                <span>—</span>
+                                <span>🇯🇵</span>
+                            </div>
+
+                            <div class="about-location">📍 minsk, belarus</div>
+
+                            <a href="https://t.me/cutieminari" target="_blank" rel="noopener noreferrer" class="about-handle-link">
+                                @cutieminari
+                            </a>
+                        </div>
+
+                        <!-- Отдельные подтемы в About Me -->
+                        <div class="subtopics-list">
+                            <!-- Подтема 1: kinn list -->
+                            <div class="subtopic-card">
+                                <button type="button" class="subtopic-btn" onclick="toggleSubtopic('sub-kinn', this)">
+                                    <span>kinn list</span>
+                                    <span class="subtopic-arrow">▼</span>
+                                </button>
+                                <div id="sub-kinn" class="subtopic-content">
+                                    сансет шиммер (млп), ханна бан, римус люпин, джереми нокс, мелисса купер, нил джостен, конь бо джек, теодор, бурундук элвин, гамбол.
+                                </div>
+                            </div>
+
+                            <!-- Подтема 2: my fandoms -->
+                            <div class="subtopic-card">
+                                <button type="button" class="subtopic-btn" onclick="toggleSubtopic('sub-fandoms', this)">
+                                    <span>my fandoms</span>
+                                    <span class="subtopic-arrow">▼</span>
+                                </button>
+                                <div id="sub-fandoms" class="subtopic-content">
+                                    тайная история, ври, лвпгочмл, all the young dudes, хорошо быть тихоней, сумерки, играй!, двк..., жаркое соперничество, вкооу, змми, фк, кпоп
+                                    <div class="fandom-extra">
+                                        очень большая фанатка <strong>shoot the ship</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. what do i do ?????? (my hobbies) -->
+                <div class="card-group">
+                    <button type="button" class="bio-btn" onclick="togglePanel('panel-work')">
+                        <span>what do i do ??????</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cfa2a9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </button>
+
+                    <div id="panel-work" class="accordion-panel">
+                        пишу музыку, продюссирую и пою в группе, увлекает лингвистика и искусства перевода, много читаю (детективчики!! и не только), каллиграфирую и с удовольствием коллекционирую воспоминания и кучи безделушек 🧸
+                    </div>
+                </div>
+
+                <!-- 3. my socials !!!!!!!!! + иконки (Telegram, Tumblr, Pinterest) -->
+                <div class="socials-card">
+                    <div class="socials-title">my socials !!!!!!!!!</div>
+                    <div class="socials-row">
+                        <a href="https://t.me/your_channel_1" target="_blank" rel="noopener noreferrer" class="social-link" title="Telegram" aria-label="Telegram">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tumblr.com/jeremycummedlmao?source=share" target="_blank" rel="noopener noreferrer" class="social-link" title="Tumblr" aria-label="Tumblr">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.327 1.374z"/>
+                            </svg>
+                        </a>
+                        <a href="https://pin.it/5bjsuoZsb" target="_blank" rel="noopener noreferrer" class="social-link" title="Pinterest" aria-label="Pinterest">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        /* Переключение основных раскрывающихся карточек */
+        function togglePanel(id) {
+            try {
+                const panel = document.getElementById(id);
+                if (panel) {
+                    panel.classList.toggle('is-open');
+                }
+            } catch (err) {
+                console.error('Ошибка переключения панели:', err);
+            }
+        }
+
+        /* Переключение вложенных подтем внутри About Me */
+        function toggleSubtopic(id, btn) {
+            try {
+                const content = document.getElementById(id);
+                if (content) {
+                    content.classList.toggle('is-open');
+                    if (btn) {
+                        btn.classList.toggle('is-active');
+                    }
+                }
+            } catch (err) {
+                console.error('Ошибка переключения подтемы:', err);
+            }
+        }
+
+        /* Рендер эмодзи и флагов через Twemoji */
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (window.twemoji) {
+                    twemoji.parse(document.body, {
+                        folder: 'svg',
+                        ext: '.svg'
+                    });
+                }
+            } catch (err) {
+                console.error('Ошибка инициализации Twemoji:', err);
+            }
+        });
+    </script>
+</body>
+</html>
